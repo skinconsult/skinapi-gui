@@ -10,56 +10,124 @@
 
 <MudCard>
     <MudForm Model="@_inputModel" @ref="@form">
-        <MudCardContent>
-            <MudTextField @bind-value="_inputModel.CompanyName"
-                          T="string"
-                          Immediate="true"
-                          label="Company name" />
-            <MudTextField @bind-value="_inputModel.Streetname"
-                          T="string"
-                          Immediate="true"
-                          label="Streetname" />
-            <MudTextField @bind-value="_inputModel.Postalcode"
-                          T="string"
-                          Immediate="true"
-                          label="Postalcode" />
-            <MudTextField @bind-value="_inputModel.City"
-                          T="string"
-                          Immediate="true"
-                          label="City" />
-            <MudTextField @bind-value="_inputModel.Country"
-                          T="string"
-                          Immediate="true"
-                          label="Country" />
-            <MudTextField @bind-value="_inputModel.GeneralEmail"
-                          T="string"
-                          Immediate="true"
-                          label="GeneralEmail" />
-            <MudTextField @bind-value="_inputModel.GeneralPhonenr"
-                          T="string"
-                          Immediate="true"
-                          label="GeneralPhonenr" />
-            <MudTextField @bind-value="_inputModel.Website"
-                          T="string"
-                          Immediate="true"
-                          label="Website" />
-        </MudCardContent>
+    <MudCardContent>
+        <MudTextField @bind-value="_inputModel.Company"
+                      T="string"
+                      Immediate="true"
+                      label="Name" />
+        <MudTextField @bind-value="_inputModel.CompanyStreetname1"
+                      T="string"
+                      Immediate="true"
+                      label="Street name 1" />
+        <MudTextField @bind-value="_inputModel.CompanyStreetname2"
+                      T="string"
+                      Immediate="true"
+                      label="Street name 2" />
+        <MudTextField @bind-value="_inputModel.CompanyPostalcode"
+                      T="string"
+                      Immediate="true"
+                      label="Postalcode" />
+        <MudTextField @bind-value="_inputModel.CompanyCity"
+                      T="string"
+                      Immediate="true"
+                      label="City" />
+        <MudTextField @bind-value="_inputModel.CompanyZIP"
+                      T="string"
+                      Immediate="true"
+                      label="ZIP" />
+        <MudTextField @bind-value="_inputModel.CompanyCountry"
+                      T="string"
+                      Immediate="true"
+                      label="Country" />
+        <MudTextField @bind-value="_inputModel.SecondAdres"
+                      T="string"
+                      Immediate="true"
+                      label="Second Adress" />
+        <MudTextField @bind-value="_inputModel.GeneralEmailaddress"
+                      T="string"
+                      Immediate="true"
+                      label="General Email" />
+        <MudTextField @bind-value="_inputModel.GeneralPhonenumber"
+                      T="string"
+                      Immediate="true"
+                      label="General Phone number" />
+        <MudTextField @bind-value="_inputModel.CompanyWebsite"
+                      T="string"
+                      Immediate="true"
+                      label="Website" />
+    </MudCardContent>
+    <MudCardActions>
+                <MudButton  Variant="Variant.Filled" Color="Color.Primary" OnClick="@(async () => await Submit)"></MudButton>
+            </MudCardActions>
     </MudForm>
 </MudCard>
 
 
 @code {
-    InputModel _inputModel = new InputModel();
+    CompanyRecord _inputModel = new CompanyRecord();
     MudForm form;
-    public class InputModel
+    //Add validator, add submitter (with Oauth) https://mudblazor.com/components/form#using-fluent-validation())
+
+    private async Task Submit()
     {
-        public string CompanyName { get; set; }
-        public string Streetname { get; set; }
-        public string Postalcode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-        public string GeneralEmail { get; set; }
-        public string GeneralPhonenr { get; set; }
-        public string Website { get; set; }
+
+    private bool x1, x2, x3, x4, x5, x6, x7, x8 = false;
+    
+    
+    }
+    public class CompanyRecord
+    {
+        public int? CompanyID { get; set; }
+    
+        public string Company { get; set; }
+    
+        public DateTime? CompanyDateEntry { get; set; }
+    
+        public bool? CompanyActive { get; set; }
+    
+        public DateTime? CompanyDateChange { get; set; }
+    
+        public string CompanyStreetname1 { get; set; }
+    
+        public string CompanyStreetname2 { get; set; }
+    
+        public string CompanyPostalcode { get; set; }
+    
+        public string CompanyCity { get; set; }
+    
+        public string CompanyZIP { get; set; }
+    
+        public string CompanyCountry { get; set; }
+    
+        public string SecondAdres { get; set; }
+    
+        public string GeneralEmailaddress { get; set; }
+    
+        public string GeneralPhonenumber { get; set; }
+    
+        public string CompanyWebsite { get; set; }
+    
+        public string ExtraContactInfo { get; set; }
+    
+        public int? CompanyStatusID { get; set; }
+    
+        public string Remarks { get; set; }
+    
+        public string BTWnumber { get; set; }
+    
+        public string KvKnumber { get; set; }
+    
+        public bool? ProductOwner { get; set; }
+    
+        public bool? Manufacturer { get; set; }
+    
+        public bool? Packager { get; set; }
+    
+        public int? CompanyHubspotID { get; set; }
+    
+        public bool? RawMaterialProducer { get; set; }
+    
+        public bool? RawMaterialSupplier { get; set; }
+    
     }
 }
