@@ -1,0 +1,65 @@
+﻿@page "/AddCompany"
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Components
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor
+
+<PageTitle>Add Company - SkinConsult</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom="true">Add new Company</MudText>
+
+<MudCard>
+    <MudForm Model="@_inputModel" @ref="@form">
+        <MudCardContent>
+            <MudTextField @bind-value="_inputModel.CompanyName"
+                          T="string"
+                          Immediate="true"
+                          label="Company name" />
+            <MudTextField @bind-value="_inputModel.Streetname"
+                          T="string"
+                          Immediate="true"
+                          label="Streetname" />
+            <MudTextField @bind-value="_inputModel.Postalcode"
+                          T="string"
+                          Immediate="true"
+                          label="Postalcode" />
+            <MudTextField @bind-value="_inputModel.City"
+                          T="string"
+                          Immediate="true"
+                          label="City" />
+            <MudTextField @bind-value="_inputModel.Country"
+                          T="string"
+                          Immediate="true"
+                          label="Country" />
+            <MudTextField @bind-value="_inputModel.GeneralEmail"
+                          T="string"
+                          Immediate="true"
+                          label="GeneralEmail" />
+            <MudTextField @bind-value="_inputModel.GeneralPhonenr"
+                          T="string"
+                          Immediate="true"
+                          label="GeneralPhonenr" />
+            <MudTextField @bind-value="_inputModel.Website"
+                          T="string"
+                          Immediate="true"
+                          label="Website" />
+        </MudCardContent>
+    </MudForm>
+</MudCard>
+
+
+@code {
+    InputModel _inputModel = new InputModel();
+    MudForm form;
+    public class InputModel
+    {
+        public string CompanyName { get; set; }
+        public string Streetname { get; set; }
+        public string Postalcode { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
+        public string GeneralEmail { get; set; }
+        public string GeneralPhonenr { get; set; }
+        public string Website { get; set; }
+    }
+}
