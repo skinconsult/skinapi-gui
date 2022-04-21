@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+builder.Services.AddHttpClient("skinapi",
+    configureClient => { configureClient.BaseAddress = new Uri("API:Endpoint"); });
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

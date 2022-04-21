@@ -1,7 +1,9 @@
 ﻿@page "/AddCompany"
 @using System.ComponentModel.DataAnnotations
+@using System.Net
 @using System.Text.RegularExpressions
 @using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Mvc
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
 
@@ -14,11 +16,15 @@
         <MudTextField @bind-value="_inputModel.Company"
                       T="string"
                       Immediate="true"
-                      label="Name" />
+                      label="Name" 
+                      Required="true" 
+                      RequiredError="Company name is required."/>
         <MudTextField @bind-value="_inputModel.CompanyStreetname1"
                       T="string"
                       Immediate="true"
-                      label="Street name 1" />
+                      label="Street name 1" 
+                      Required="true" 
+                      RequiredError="At least one company streetname is required."/>
         <MudTextField @bind-value="_inputModel.CompanyStreetname2"
                       T="string"
                       Immediate="true"
@@ -26,11 +32,13 @@
         <MudTextField @bind-value="_inputModel.CompanyPostalcode"
                       T="string"
                       Immediate="true"
-                      label="Postalcode" />
+                      label="Postalcode" Required="true"
+                      RequiredError="Company Postalcode is required."/>
         <MudTextField @bind-value="_inputModel.CompanyCity"
                       T="string"
                       Immediate="true"
-                      label="City" />
+                      label="City" Required="true"
+                      RequiredError="Company city is required."/>
         <MudTextField @bind-value="_inputModel.CompanyZIP"
                       T="string"
                       Immediate="true"
@@ -38,11 +46,12 @@
         <MudTextField @bind-value="_inputModel.CompanyCountry"
                       T="string"
                       Immediate="true"
-                      label="Country" />
+                      label="Country" Required="true"
+                      RequiredError="Company country is required."/>
         <MudTextField @bind-value="_inputModel.SecondAdres"
                       T="string"
                       Immediate="true"
-                      label="Second Adress" />
+                      label="Second Address" />
         <MudTextField @bind-value="_inputModel.GeneralEmailaddress"
                       T="string"
                       Immediate="true"
@@ -57,24 +66,26 @@
                       label="Website" />
     </MudCardContent>
     <MudCardActions>
-                <MudButton  Variant="Variant.Filled" Color="Color.Primary" OnClick="@(async () => await Submit)"></MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="Submit">Submit</MudButton>
             </MudCardActions>
     </MudForm>
 </MudCard>
 
 
 @code {
+    
+    
+    
+    
     CompanyRecord _inputModel = new CompanyRecord();
     MudForm form;
     //Add validator, add submitter (with Oauth) https://mudblazor.com/components/form#using-fluent-validation())
 
-    private async Task Submit()
+    private void Submit()
     {
-
-    private bool x1, x2, x3, x4, x5, x6, x7, x8 = false;
-    
-    
+        
     }
+    
     public class CompanyRecord
     {
         public int? CompanyID { get; set; }
