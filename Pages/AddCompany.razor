@@ -6,6 +6,8 @@
 @using Microsoft.AspNetCore.Mvc
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
 
 <PageTitle>Add Company - SkinConsult</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">Add new Company</MudText>
@@ -83,7 +85,7 @@
 
     private void Submit()
     {
-        
+        Console.WriteLine(Configuration["APIEndpoint"]);
     }
     
     public class CompanyRecord

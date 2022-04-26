@@ -11,6 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
+builder.Services.AddHttpClient("skinapi",
+    configureClient =>
+    {
+        configureClient.BaseAddress = new Uri("API:Endpoint"); 
+        using var response = configureClient.GetAsync("usersecrets.json");
+        using var stream = response.Result.Content.ReadAsStreamAsync();
+        builder.Configuration.AddJsonStream(stream.Result);
+    });
 
 var app = builder.Build();
 
@@ -21,9 +29,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+Console.WriteLine();
 
-builder.Services.AddHttpClient("skinapi",
-    configureClient => { configureClient.BaseAddress = new Uri("API:Endpoint"); });
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
