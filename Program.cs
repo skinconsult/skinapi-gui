@@ -33,7 +33,7 @@ services.AddAuthentication(options => { options.DefaultChallengeScheme = openIdC
 
         var openIdConnectConfiguration = new OpenIdConnectConfiguration
         {
-            TokenEndpoint = $"{authority}{openIdConfig["TokenEndpointPath"]}"
+            TokenEndpoint = $"{openIdConfig["TokenEndpointPath"]}"
         };
 
         options.Configuration = openIdConnectConfiguration;
@@ -43,7 +43,11 @@ services.AddAuthentication(options => { options.DefaultChallengeScheme = openIdC
     });
 
 services.AddClientAccessTokenManagement(options => { options.DefaultClient.Scope = openIdConfig["Scope"]; })
-    .ConfigureBackchannelHttpClient()
+    .ConfigureBackchannelHttpClient(
+        options => {
+            options.BaseAddress = new Uri($"{openIdConfig["TokenEndpointPath"]}");
+        }
+    )
     .AddTransientHttpErrorPolicy(Policies.CreateRetryPolicy);
 
 services.AddHttpClient<ISkinApiClient, SkinApiClient>(client =>

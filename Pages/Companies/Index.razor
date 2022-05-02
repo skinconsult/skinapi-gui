@@ -1,0 +1,33 @@
+@page "/companies"
+@using SkinApi.Gui.Clients;
+@inject ISkinApiClient SkinApiClient;
+
+<PageTitle>View Companies</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom="true">View Companies</MudText>
+
+
+<MudText>@message</MudText>
+
+<MudTable Items="@companies" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info">
+         <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.CompanyID</MudTd>
+        <MudTd DataLabel="Name">@context.Company</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private string message;
+    private IEnumerable<CompanyRecord> companies = new List<CompanyRecord>();
+        private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        message = $"Initialized at {DateTime.Now}";
+        companies = await SkinApiClient.GetCompaniesAsync();
+        loading = false;
+    }
+}
