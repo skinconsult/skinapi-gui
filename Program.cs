@@ -1,9 +1,15 @@
-using System.Net.Http.Headers;
+using System.Net;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using MudBlazor.Services;
+using Polly;
+using Polly.Extensions.Http;
+using Polly.Retry;
+using SkinApi.Gui.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,14 +17,43 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
-builder.Services.AddHttpClient("skinapi",
-    configureClient =>
+
+var services = builder.Services;
+services.AddControllers();
+
+const string openIdConnectAuthenticationScheme = OpenIdConnectDefaults.AuthenticationScheme;
+
+var openIdConfig = builder.Configuration.GetSection("Api");
+
+services.AddAuthentication(options => { options.DefaultChallengeScheme = openIdConnectAuthenticationScheme; })
+    .AddOpenIdConnect(openIdConnectAuthenticationScheme, options =>
     {
-        configureClient.BaseAddress = new Uri("API:Endpoint"); 
-        using var response = configureClient.GetAsync("usersecrets.json");
-        using var stream = response.Result.Content.ReadAsStreamAsync();
-        builder.Configuration.AddJsonStream(stream.Result);
+        var authority = $"{openIdConfig["Authority"]}";
+        options.Authority = authority;
+
+        var openIdConnectConfiguration = new OpenIdConnectConfiguration
+        {
+            TokenEndpoint = $"{authority}{openIdConfig["TokenEndpointPath"]}"
+        };
+
+        options.Configuration = openIdConnectConfiguration;
+
+        options.ClientId = openIdConfig["ClientId"];
+        options.ClientSecret = openIdConfig["ClientSecret"];
     });
+
+services.AddClientAccessTokenManagement(options => { options.DefaultClient.Scope = openIdConfig["Scope"]; })
+    .ConfigureBackchannelHttpClient()
+    .AddTransientHttpErrorPolicy(Policies.CreateRetryPolicy);
+
+services.AddHttpClient<ISkinApiClient, SkinApiClient>(client =>
+    {
+        client.BaseAddress = new Uri(openIdConfig["Authority"]);
+    })
+    .AddClientAccessTokenHandler()
+    .AddPolicyHandler(Policies.GetDefaultRetryPolicy())
+    .AddPolicyHandler(Policies.GetDefaultCircuitBreakerPolicy());
+
 
 var app = builder.Build();
 
@@ -29,7 +64,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-Console.WriteLine();
 
 app.UseHttpsRedirection();
 
@@ -41,3 +75,5 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+
