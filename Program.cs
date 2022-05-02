@@ -1,4 +1,5 @@
 using System.Net;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -21,42 +22,28 @@ builder.Services.AddMudServices();
 var services = builder.Services;
 services.AddControllers();
 
-const string openIdConnectAuthenticationScheme = OpenIdConnectDefaults.AuthenticationScheme;
 
-var openIdConfig = builder.Configuration.GetSection("Api");
-
-services.AddAuthentication(options => { options.DefaultChallengeScheme = openIdConnectAuthenticationScheme; })
-    .AddOpenIdConnect(openIdConnectAuthenticationScheme, options =>
+var authConfig = builder.Configuration.GetSection("ApiAuth");
+builder.Services.AddAccessTokenManagement(options =>
+{
+    options.Client.Clients.Add("skinapi", new ClientCredentialsTokenRequest
     {
-        var authority = $"{openIdConfig["Authority"]}";
-        options.Authority = authority;
-
-        var openIdConnectConfiguration = new OpenIdConnectConfiguration
+        Address = authConfig["Address"],
+        ClientId = authConfig["ClientId"],
+        ClientSecret = authConfig["ClientSecret"],
+        Scope = authConfig["Scope"],
+        Parameters =
         {
-            TokenEndpoint = $"{openIdConfig["TokenEndpointPath"]}"
-        };
-
-        options.Configuration = openIdConnectConfiguration;
-
-        options.ClientId = openIdConfig["ClientId"];
-        options.ClientSecret = openIdConfig["ClientSecret"];
-    });
-
-services.AddClientAccessTokenManagement(options => { options.DefaultClient.Scope = openIdConfig["Scope"]; })
-    .ConfigureBackchannelHttpClient(
-        options => {
-            options.BaseAddress = new Uri($"{openIdConfig["TokenEndpointPath"]}");
+            { "audience", authConfig["Audience"]},
         }
-    )
-    .AddTransientHttpErrorPolicy(Policies.CreateRetryPolicy);
+    });
+});
 
-services.AddHttpClient<ISkinApiClient, SkinApiClient>(client =>
-    {
-        client.BaseAddress = new Uri(openIdConfig["Authority"]);
-    })
-    .AddClientAccessTokenHandler()
-    .AddPolicyHandler(Policies.GetDefaultRetryPolicy())
-    .AddPolicyHandler(Policies.GetDefaultCircuitBreakerPolicy());
+var apiConfig = builder.Configuration.GetSection("Api");
+builder.Services
+    .AddHttpClient<ISkinApiClient, SkinApiClient>()
+    .ConfigureHttpClient(client => client.BaseAddress = new Uri(apiConfig["BaseAddress"]))
+    .AddClientAccessTokenHandler("skinapi");
 
 
 var app = builder.Build();

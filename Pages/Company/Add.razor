@@ -1,4 +1,4 @@
-﻿@page "/companies/add" 
+﻿@page "/company/add" 
 @using System.ComponentModel.DataAnnotations
 @using System.Net
 @using System.Text.RegularExpressions
@@ -76,10 +76,6 @@
 
 
 @code {
-    
-    
-    
-    
     CompanyRecord _inputModel = new CompanyRecord();
     MudForm form;
     //Add validator, add submitter (with Oauth) https://mudblazor.com/components/form#using-fluent-validation())
@@ -88,6 +84,4 @@
     {
         //Console.WriteLine(Configuration["APIEndpoint"]);
     }
-    
- 
 }

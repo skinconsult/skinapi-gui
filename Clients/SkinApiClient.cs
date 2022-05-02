@@ -15,13 +15,7 @@ namespace SkinApi.Gui.Clients
         public async Task<IEnumerable<CompanyRecord>> GetCompaniesAsync()
         {
             var result =  await _httpClient.GetAsync("/Company");
-            // Result to enumerable
-            return await result.Content.ReadFromJsonAsync<IEnumerable<CompanyRecord>>();
-        }
-
-        public Task<HttpResponseMessage> GetTest()
-        {
-            return _httpClient.GetAsync("test");
+            return await result.Content.ReadFromJsonAsync<IEnumerable<CompanyRecord>>() ?? throw new InvalidOperationException();
         }
     }
 }

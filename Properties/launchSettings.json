@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SkinAPI.GUI": {
+    "SkinApi.Gui": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
