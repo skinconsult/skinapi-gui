@@ -12,8 +12,9 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id" >@context.CompanyID</MudTd>
-        <MudTd DataLabel="Azioni" Style="text-align:right">
-            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Small" OnClick="@((e) => SelectCompany(context.CompanyID.Value))"><strong>Apri</strong></MudButton>
+        <MudTd DataLabel="Name">@context.Company</MudTd>
+        <MudTd DataLabel="EditCompany" Style="text-align:right">
+            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Small" OnClick="@((e) => SelectCompany(context.CompanyID.Value))"><strong>Edit</strong></MudButton>
         </MudTd>    
     </RowTemplate>
 </MudTable>
