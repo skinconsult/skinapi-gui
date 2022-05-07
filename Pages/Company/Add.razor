@@ -9,6 +9,7 @@
 @using Microsoft.Extensions.Configuration;
 @using SkinApi.Gui.Clients;
 @inject ISkinApiClient SkinApiClient;
+@inject ISnackbar Snackbar;
 
 <PageTitle>Add Company - SkinConsult</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">Add new Company</MudText>
@@ -76,12 +77,93 @@
 
 
 @code {
+    [Inject] private IDialogService DialogService { get; set; }
     CompanyRecord _inputModel = new CompanyRecord();
     MudForm form;
-    //Add validator, add submitter (with Oauth) https://mudblazor.com/components/form#using-fluent-validation())
 
-    private void Submit()
+    private IEnumerable<CompanyRecord> companies = new List<CompanyRecord>();
+
+    protected override async Task OnInitializedAsync()
     {
-        //Console.WriteLine(Configuration["APIEndpoint"]);
+        companies = await SkinApiClient.GetCompaniesAsync();
+    }
+    
+    private List<string> CompanyNames = new List<string>();
+    private List<string> CompanyStreetNames = new List<string>();
+    private List<string> CompanyPostalCodes = new List<string>();
+    private List<string> CompanyKVKnumbers = new List<string>();
+
+    private async void Submit()
+    {
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        
+        foreach (var company in companies)
+        {
+            CompanyNames.Add(company.Company);
+            CompanyStreetNames.Add(company.CompanyStreetname1);
+            CompanyStreetNames.Add(company.CompanyStreetname2);
+            CompanyPostalCodes.Add(company.CompanyPostalcode);
+            CompanyKVKnumbers.Add(company.KvKnumber);
+        }
+
+        if (CompanyNames.Contains(_inputModel.Company))
+        {
+            Snackbar.Add("Company name already exists in database. Company has not been added.", Severity.Error);
+            return;
+        }
+
+        if (CompanyStreetNames.Contains(_inputModel.CompanyStreetname1))
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning", 
+                "Streetname " + _inputModel.CompanyStreetname1 + " already exists in the database. Continue?", 
+                yesText:"Yes", cancelText:"No");
+
+            if (result == false)
+            {
+                return;
+            }
+        }
+
+        if (CompanyStreetNames.Contains(_inputModel.CompanyStreetname2))
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning", 
+                "Streetname " + _inputModel.CompanyStreetname2 + " already exists in the database. Continue?", 
+                yesText:"Yes", cancelText:"No");
+            
+            if (result == false)
+            {
+                return;
+            }
+        }
+        
+        if (CompanyStreetNames.Contains(_inputModel.CompanyPostalcode))
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning", 
+                "Postal code " + _inputModel.CompanyPostalcode + " already exists in the database. Continue?", 
+                yesText:"Yes", cancelText:"No");
+            
+            if (result == false)
+            {
+                return;
+            }
+        }
+        
+        if (CompanyStreetNames.Contains(_inputModel.KvKnumber))
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning", 
+                "KVK-number " + _inputModel.KvKnumber + " already exists in the database. Continue?", 
+                yesText:"Yes", cancelText:"No");
+            
+            if (result == false)
+            {
+                return;
+            }
+        }
+        
+        SkinApiClient.AddCompanyAsync(_inputModel);
     }
 }

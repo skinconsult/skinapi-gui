@@ -1,5 +1,8 @@
 ﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using MudBlazor;
+using Newtonsoft.Json;
 
 namespace SkinApi.Gui.Clients
 {
@@ -16,6 +19,12 @@ namespace SkinApi.Gui.Clients
         {
             var result =  await _httpClient.GetAsync("/Company");
             return await result.Content.ReadFromJsonAsync<IEnumerable<CompanyRecord>>() ?? throw new InvalidOperationException();
+        }
+
+        public void AddCompanyAsync(CompanyRecord inputModel)
+        {
+            var httpContent = new StringContent(JsonConvert.SerializeObject(inputModel), Encoding.UTF8, "application/json");
+            _httpClient.PostAsync("/Company", httpContent);
         }
     }
 }

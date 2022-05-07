@@ -11,8 +11,10 @@
         <MudTh>Name</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.CompanyID</MudTd>
-        <MudTd DataLabel="Name">@context.Company</MudTd>
+        <MudTd DataLabel="Id" >@context.CompanyID</MudTd>
+        <MudTd DataLabel="Azioni" Style="text-align:right">
+            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Small" OnClick="@((e) => SelectCompany(context.CompanyID.Value))"><strong>Apri</strong></MudButton>
+        </MudTd>    
     </RowTemplate>
 </MudTable>
 
@@ -24,6 +26,13 @@
     {
         companies = await SkinApiClient.GetCompaniesAsync();
         loading = false;
+    }
+
+    private async void SelectCompany(int CompanyId)
+    {
+        
+        
+        //use some sort of Mudblazor popup menu, update data, post to database.
     }
 
 }
