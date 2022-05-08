@@ -21,10 +21,16 @@ namespace SkinApi.Gui.Clients
             return await result.Content.ReadFromJsonAsync<IEnumerable<CompanyRecord>>() ?? throw new InvalidOperationException();
         }
 
-        public void AddCompanyAsync(CompanyRecord inputModel)
+        public async void AddCompanyAsync(CompanyRecord inputModel)
         {
             var httpContent = new StringContent(JsonConvert.SerializeObject(inputModel), Encoding.UTF8, "application/json");
-            _httpClient.PostAsync("/Company", httpContent);
+            await _httpClient.PostAsync("/Company", httpContent);
+        }
+
+        public async void UpdateCompaniesAsync(IEnumerable<CompanyRecord> companies)
+        {
+            var httpContent = new StringContent(JsonConvert.SerializeObject(companies), Encoding.UTF8, "application/json");
+            await _httpClient.PostAsync("/Company", httpContent);
         }
     }
 }

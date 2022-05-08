@@ -1,6 +1,7 @@
 @page "/company"
 @using SkinApi.Gui.Clients;
 @inject ISkinApiClient SkinApiClient;
+@inject NavigationManager NavManager;
 
 <PageTitle>View Companies</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">View Companies</MudText>
@@ -29,11 +30,9 @@
         loading = false;
     }
 
-    private async void SelectCompany(int CompanyId)
+    private void SelectCompany(int CompanyId)
     {
-        
-        
-        //use some sort of Mudblazor popup menu, update data, post to database.
+        NavManager.NavigateTo("/company/edit/" + CompanyId);
     }
 
 }
