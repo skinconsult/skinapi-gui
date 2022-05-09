@@ -10,6 +10,7 @@
 @using SkinApi.Gui.Clients;
 @inject ISkinApiClient SkinApiClient;
 @inject ISnackbar Snackbar;
+@inject NavigationManager NavManager;
 
 <PageTitle>Add Company - SkinConsult</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">Add new Company</MudText>
@@ -165,5 +166,6 @@
         }
         
         SkinApiClient.AddCompanyAsync(_inputModel);
+        NavManager.NavigateTo("/company");
     }
 }
