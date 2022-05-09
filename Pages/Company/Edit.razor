@@ -132,22 +132,8 @@
             Snackbar.Add("Company name already exists in database. Company has not been updated.", Severity.Error);
             return;
         }
-        
-        
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).Company = currentCompany.Company;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyStreetname1 = currentCompany.CompanyStreetname1;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyStreetname2 = currentCompany.CompanyStreetname2;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyPostalcode = currentCompany.CompanyPostalcode;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyCity = currentCompany.CompanyCity;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyZIP = currentCompany.CompanyZIP;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyCountry = currentCompany.CompanyCountry;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).SecondAdres = currentCompany.SecondAdres;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).GeneralEmailaddress = currentCompany.GeneralEmailaddress;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).GeneralPhonenumber = currentCompany.GeneralPhonenumber;
-        companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId).CompanyWebsite = currentCompany.CompanyWebsite;
 
-        SkinApiClient.UpdateCompaniesAsync(companies);
+        SkinApiClient.UpdateCompanyAsync(CompanyRecordModel);
         NavManager.NavigateTo("/company");
-        
     }
 }

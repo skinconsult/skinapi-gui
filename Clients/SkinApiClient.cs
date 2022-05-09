@@ -27,10 +27,10 @@ namespace SkinApi.Gui.Clients
             await _httpClient.PostAsync("/Company", httpContent);
         }
 
-        public async void UpdateCompaniesAsync(IEnumerable<CompanyRecord> companies)
+        public async void UpdateCompanyAsync(CompanyRecord companyRecord)
         {
-            var httpContent = new StringContent(JsonConvert.SerializeObject(companies), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync("/Company", httpContent);
+            var httpContent = new StringContent(JsonConvert.SerializeObject(companyRecord), Encoding.UTF8, "application/json");
+            await _httpClient.PostAsync("/Company/" + companyRecord.CompanyID, httpContent);
         }
     }
 }

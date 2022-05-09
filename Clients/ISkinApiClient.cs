@@ -7,6 +7,6 @@ namespace SkinApi.Gui.Clients
     {
         public Task<IEnumerable<CompanyRecord>> GetCompaniesAsync();
         public void AddCompanyAsync(CompanyRecord inputModel);
-        public void UpdateCompaniesAsync(IEnumerable<CompanyRecord> companies);
+        public void UpdateCompanyAsync(CompanyRecord companyRecord);
     }
 }
