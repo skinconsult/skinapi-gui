@@ -23,8 +23,9 @@ namespace SkinApi.Gui.Clients
 
         public async void AddCompanyAsync(CompanyRecord inputModel)
         {
+            string CompanyId = null;
             var httpContent = new StringContent(JsonConvert.SerializeObject(inputModel), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync("/Company", httpContent);
+            await _httpClient.PostAsync("/Company/" + CompanyId, httpContent);
         }
 
         public async void UpdateCompanyAsync(CompanyRecord companyRecord)
