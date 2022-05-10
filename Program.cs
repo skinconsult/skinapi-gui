@@ -60,7 +60,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 });
 
 
-bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 if (!isDevelopment)
 {
 // Add authentication services

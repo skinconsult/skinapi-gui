@@ -12,74 +12,74 @@
 @inject ISkinApiClient SkinApiClient;
 @inject ISnackbar Snackbar;
 @inject NavigationManager NavManager;
+@inject IDialogService DialogService;
 
 <PageTitle>Add Company - SkinConsult</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">Add new Company</MudText>
 
 <MudCard>
     <MudForm Model="@_inputModel" @ref="@form">
-    <MudCardContent>
-        <MudTextField @bind-value="_inputModel.Company"
-                      T="string"
-                      Immediate="true"
-                      label="Name" 
-                      Required="true" 
-                      RequiredError="Company name is required."/>
-        <MudTextField @bind-value="_inputModel.CompanyStreetname1"
-                      T="string"
-                      Immediate="true"
-                      label="Street name 1" 
-                      Required="true" 
-                      RequiredError="At least one company streetname is required."/>
-        <MudTextField @bind-value="_inputModel.CompanyStreetname2"
-                      T="string"
-                      Immediate="true"
-                      label="Street name 2" />
-        <MudTextField @bind-value="_inputModel.CompanyPostalcode"
-                      T="string"
-                      Immediate="true"
-                      label="Postalcode" Required="true"
-                      RequiredError="Company Postalcode is required."/>
-        <MudTextField @bind-value="_inputModel.CompanyCity"
-                      T="string"
-                      Immediate="true"
-                      label="City" Required="true"
-                      RequiredError="Company city is required."/>
-        <MudTextField @bind-value="_inputModel.CompanyZIP"
-                      T="string"
-                      Immediate="true"
-                      label="ZIP" />
-        <MudTextField @bind-value="_inputModel.CompanyCountry"
-                      T="string"
-                      Immediate="true"
-                      label="Country" Required="true"
-                      RequiredError="Company country is required."/>
-        <MudTextField @bind-value="_inputModel.SecondAdres"
-                      T="string"
-                      Immediate="true"
-                      label="Second Address" />
-        <MudTextField @bind-value="_inputModel.GeneralEmailaddress"
-                      T="string"
-                      Immediate="true"
-                      label="General Email" />
-        <MudTextField @bind-value="_inputModel.GeneralPhonenumber"
-                      T="string"
-                      Immediate="true"
-                      label="General Phone number" />
-        <MudTextField @bind-value="_inputModel.CompanyWebsite"
-                      T="string"
-                      Immediate="true"
-                      label="Website" />
-    </MudCardContent>
-    <MudCardActions>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="Submit">Submit</MudButton>
-            </MudCardActions>
+        <MudCardContent>
+            <MudTextField @bind-value="_inputModel.Company"
+                          T="string"
+                          Immediate="true"
+                          label="Name"
+                          Required="true"
+                          RequiredError="Company name is required."/>
+            <MudTextField @bind-value="_inputModel.CompanyStreetname1"
+                          T="string"
+                          Immediate="true"
+                          label="Street name 1"
+                          Required="true"
+                          RequiredError="At least one company streetname is required."/>
+            <MudTextField @bind-value="_inputModel.CompanyStreetname2"
+                          T="string"
+                          Immediate="true"
+                          label="Street name 2"/>
+            <MudTextField @bind-value="_inputModel.CompanyPostalcode"
+                          T="string"
+                          Immediate="true"
+                          label="Postalcode" Required="true"
+                          RequiredError="Company Postalcode is required."/>
+            <MudTextField @bind-value="_inputModel.CompanyCity"
+                          T="string"
+                          Immediate="true"
+                          label="City" Required="true"
+                          RequiredError="Company city is required."/>
+            <MudTextField @bind-value="_inputModel.CompanyZIP"
+                          T="string"
+                          Immediate="true"
+                          label="ZIP"/>
+            <MudTextField @bind-value="_inputModel.CompanyCountry"
+                          T="string"
+                          Immediate="true"
+                          label="Country" Required="true"
+                          RequiredError="Company country is required."/>
+            <MudTextField @bind-value="_inputModel.SecondAdres"
+                          T="string"
+                          Immediate="true"
+                          label="Second Address"/>
+            <MudTextField @bind-value="_inputModel.GeneralEmailaddress"
+                          T="string"
+                          Immediate="true"
+                          label="General Email"/>
+            <MudTextField @bind-value="_inputModel.GeneralPhonenumber"
+                          T="string"
+                          Immediate="true"
+                          label="General Phone number"/>
+            <MudTextField @bind-value="_inputModel.CompanyWebsite"
+                          T="string"
+                          Immediate="true"
+                          label="Website"/>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="Submit">Submit</MudButton>
+        </MudCardActions>
     </MudForm>
 </MudCard>
 
 
 @code {
-    [Inject] private IDialogService DialogService { get; set; }
     CompanyRecord _inputModel = new CompanyRecord();
     MudForm form;
 
@@ -89,84 +89,86 @@
     {
         companies = await SkinApiClient.GetCompaniesAsync();
     }
-    
-    private List<string> CompanyNames = new List<string>();
-    private List<string> CompanyStreetNames = new List<string>();
-    private List<string> CompanyPostalCodes = new List<string>();
-    private List<string> CompanyKVKnumbers = new List<string>();
 
+    // Replace validation with something that does it on the fly:
+    // https://mudblazor.com/components/form#using-simple-fluent-validation
     private async void Submit()
     {
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        
-        foreach (var company in companies)
-        {
-            CompanyNames.Add(company.Company);
-            CompanyStreetNames.Add(company.CompanyStreetname1);
-            CompanyStreetNames.Add(company.CompanyStreetname2);
-            CompanyPostalCodes.Add(company.CompanyPostalcode);
-            CompanyKVKnumbers.Add(company.KvKnumber);
-        }
 
-        if (CompanyNames.Contains(_inputModel.Company))
+        if (companies.Any(c => c.Company.Equals(_inputModel.Company, StringComparison.OrdinalIgnoreCase)))
         {
-            Snackbar.Add("Company name already exists in database. Company has not been added.", Severity.Error);
             return;
         }
 
-        if (CompanyStreetNames.Contains(_inputModel.CompanyStreetname1))
+        if (companies.Any(c =>
+            c.CompanyStreetname1.Equals(_inputModel.CompanyStreetname1, StringComparison.OrdinalIgnoreCase) ||
+            c.CompanyStreetname1.Equals(_inputModel.CompanyStreetname2, StringComparison.OrdinalIgnoreCase)
+            ))
         {
-            bool? result = await DialogService.ShowMessageBox(
-                "Warning", 
-                "Streetname " + _inputModel.CompanyStreetname1 + " already exists in the database. Continue?", 
-                yesText:"Yes", cancelText:"No");
+            var result = await DialogService.ShowMessageBox(
+                "Warning",
+                $"Streetname {_inputModel.CompanyStreetname1} already exists in the database. Continue?",
+                yesText: "Yes",
+                cancelText: "No");
 
-            if (result == false)
+            if (result != true)
             {
                 return;
             }
         }
 
-        if (CompanyStreetNames.Contains(_inputModel.CompanyStreetname2))
+        if (companies.Any(c =>
+            c.CompanyStreetname2.Equals(_inputModel.CompanyStreetname1, StringComparison.OrdinalIgnoreCase) ||
+            c.CompanyStreetname2.Equals(_inputModel.CompanyStreetname2, StringComparison.OrdinalIgnoreCase)
+            ))
         {
-            bool? result = await DialogService.ShowMessageBox(
-                "Warning", 
-                "Streetname " + _inputModel.CompanyStreetname2 + " already exists in the database. Continue?", 
-                yesText:"Yes", cancelText:"No");
-            
-            if (result == false)
+            var result = await DialogService.ShowMessageBox(
+                "Warning",
+                $"Streetname {_inputModel.CompanyStreetname2} already exists in the database. Continue?",
+                yesText: "Yes",
+                cancelText: "No");
+
+            if (result != true)
             {
                 return;
             }
         }
-        
-        if (CompanyStreetNames.Contains(_inputModel.CompanyPostalcode))
+
+        if (companies.Any(c =>
+            c.CompanyPostalcode.Equals(_inputModel.CompanyPostalcode, StringComparison.OrdinalIgnoreCase)
+            ))
         {
-            bool? result = await DialogService.ShowMessageBox(
-                "Warning", 
-                "Postal code " + _inputModel.CompanyPostalcode + " already exists in the database. Continue?", 
-                yesText:"Yes", cancelText:"No");
-            
-            if (result == false)
+            var result = await DialogService.ShowMessageBox(
+                "Warning",
+                $"Postal code {_inputModel.CompanyPostalcode} already exists in the database. Continue?",
+                yesText: "Yes", 
+                cancelText: "No");
+
+            if (result != true)
             {
                 return;
             }
         }
-        
-        if (CompanyStreetNames.Contains(_inputModel.KvKnumber))
+
+        if (companies.Any(c =>
+            c.KvKnumber.Equals(_inputModel.KvKnumber, StringComparison.OrdinalIgnoreCase)
+            ))
         {
-            bool? result = await DialogService.ShowMessageBox(
-                "Warning", 
-                "KVK-number " + _inputModel.KvKnumber + " already exists in the database. Continue?", 
-                yesText:"Yes", cancelText:"No");
-            
-            if (result == false)
+            var result = await DialogService.ShowMessageBox(
+                "Warning",
+                $"KVK-number {_inputModel.KvKnumber} already exists in the database. Continue?",
+                yesText: "Yes", 
+                cancelText: "No");
+
+            if (result != true)
             {
                 return;
             }
         }
-        
+
         SkinApiClient.AddCompanyAsync(_inputModel);
         NavManager.NavigateTo("/company");
     }
+
 }

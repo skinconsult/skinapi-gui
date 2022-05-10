@@ -7,33 +7,42 @@
 <PageTitle>View Companies</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">View Companies</MudText>
 
-<MudTable Items="@companies" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info">
+<MudTable 
+    Items="@_companies" 
+    Hover="true" 
+    Dense="true"
+    Breakpoint="Breakpoint.Sm" 
+    Loading="@_loading" 
+    LoadingProgressColor="Color.Info"
+    
+    >
     <HeaderContent>
         <MudTh>Id</MudTh>
         <MudTh>Name</MudTh>
+        <MudTh>Edit</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id" >@context.CompanyID</MudTd>
         <MudTd DataLabel="Name">@context.Company</MudTd>
         <MudTd DataLabel="EditCompany" Style="text-align:right">
-            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Small" OnClick="@((e) => SelectCompany(context.CompanyID.Value))"><strong>Edit</strong></MudButton>
+            <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="@((e) => SelectCompany(context.CompanyID.Value))" />
         </MudTd>    
     </RowTemplate>
 </MudTable>
 
 @code {
-    private IEnumerable<CompanyRecord> companies = new List<CompanyRecord>();
-    private bool loading = true;
+    private IEnumerable<CompanyRecord> _companies = new List<CompanyRecord>();
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        companies = await SkinApiClient.GetCompaniesAsync();
-        loading = false;
+        _companies = await SkinApiClient.GetCompaniesAsync();
+        _loading = false;
     }
 
-    private void SelectCompany(int CompanyId)
+    private void SelectCompany(int companyId)
     {
-        NavManager.NavigateTo("/company/edit/" + CompanyId);
+        NavManager.NavigateTo("/company/edit/" + companyId);
     }
 
 }
