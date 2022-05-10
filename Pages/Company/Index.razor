@@ -2,6 +2,7 @@
 @page "/company"
 @using SkinApi.Gui.Clients;
 @inject ISkinApiClient SkinApiClient;
+@inject NavigationManager NavManager;
 
 <PageTitle>View Companies</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true">View Companies</MudText>
@@ -12,8 +13,11 @@
         <MudTh>Name</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.CompanyID</MudTd>
+        <MudTd DataLabel="Id" >@context.CompanyID</MudTd>
         <MudTd DataLabel="Name">@context.Company</MudTd>
+        <MudTd DataLabel="EditCompany" Style="text-align:right">
+            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Small" OnClick="@((e) => SelectCompany(context.CompanyID.Value))"><strong>Edit</strong></MudButton>
+        </MudTd>    
     </RowTemplate>
 </MudTable>
 
@@ -25,6 +29,11 @@
     {
         companies = await SkinApiClient.GetCompaniesAsync();
         loading = false;
+    }
+
+    private void SelectCompany(int CompanyId)
+    {
+        NavManager.NavigateTo("/company/edit/" + CompanyId);
     }
 
 }
