@@ -1,5 +1,6 @@
 using System.Net;
 using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components;
@@ -11,6 +12,7 @@ using MudBlazor.Services;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
+using SkinApi.Gui;
 using SkinApi.Gui.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,71 +59,82 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
+
+bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+if (!isDevelopment)
+{
 // Add authentication services
-services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddCookie()
-    .AddOpenIdConnect("Auth0", options =>
-    {
-        // Set the authority to your Auth0 domain
-        options.Authority = $"https://{frontendAuthConfiguration["Domain"]}";
-
-        // Configure the Auth0 Client ID and Client Secret
-        options.ClientId = frontendAuthConfiguration["ClientId"];
-        options.ClientSecret = frontendAuthConfiguration["ClientSecret"];
-
-        // Set response type to code
-        options.ResponseType = OpenIdConnectResponseType.Code;
-
-        // Configure the scope
-        options.Scope.Add("openid");
-
-        // Set the callback path, so Auth0 will call back to http://localhost:3000/callback
-        // Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard
-        options.CallbackPath = new PathString("/callback");
-
-        // Configure the Claims Issuer to be Auth0
-        options.ClaimsIssuer = "Auth0";
-
-        options.Events = new OpenIdConnectEvents
+    services.AddAuthentication(options =>
         {
-            OnRedirectToIdentityProvider = context =>
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie()
+        .AddOpenIdConnect("Auth0", options =>
+        {
+            // Set the authority to your Auth0 domain
+            options.Authority = $"https://{frontendAuthConfiguration["Domain"]}";
+
+            // Configure the Auth0 Client ID and Client Secret
+            options.ClientId = frontendAuthConfiguration["ClientId"];
+            options.ClientSecret = frontendAuthConfiguration["ClientSecret"];
+
+            // Set response type to code
+            options.ResponseType = OpenIdConnectResponseType.Code;
+
+            // Configure the scope
+            options.Scope.Add("openid");
+
+            // Set the callback path, so Auth0 will call back to http://localhost:3000/callback
+            // Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard
+            options.CallbackPath = new PathString("/callback");
+
+            // Configure the Claims Issuer to be Auth0
+            options.ClaimsIssuer = "Auth0";
+
+            options.Events = new OpenIdConnectEvents
             {
-                context.ProtocolMessage.SetParameter("audience", frontendAuthConfiguration["ApiIdentifier"]);
-
-                return Task.FromResult(0);
-            },
-
-            // handle the logout redirection
-            OnRedirectToIdentityProviderForSignOut = context =>
-            {
-                var logoutUri =
-                    $"https://{frontendAuthConfiguration["Domain"]}/v2/logout?client_id={frontendAuthConfiguration["ClientId"]}";
-
-                var postLogoutUri = "/";
-                if (!string.IsNullOrEmpty(postLogoutUri))
+                OnRedirectToIdentityProvider = context =>
                 {
-                    if (postLogoutUri.StartsWith("/", StringComparison.InvariantCultureIgnoreCase))
+                    context.ProtocolMessage.SetParameter("audience", frontendAuthConfiguration["ApiIdentifier"]);
+
+                    return Task.FromResult(0);
+                },
+
+                // handle the logout redirection
+                OnRedirectToIdentityProviderForSignOut = context =>
+                {
+                    var logoutUri =
+                        $"https://{frontendAuthConfiguration["Domain"]}/v2/logout?client_id={frontendAuthConfiguration["ClientId"]}";
+
+                    var postLogoutUri = "/";
+                    if (!string.IsNullOrEmpty(postLogoutUri))
                     {
-                        // transform to absolute
-                        var request = context.Request;
-                        postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                        if (postLogoutUri.StartsWith("/", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // transform to absolute
+                            var request = context.Request;
+                            postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                        }
+
+                        logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
                     }
 
-                    logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
-                }
+                    context.Response.Redirect(logoutUri);
+                    context.HandleResponse();
 
-                context.Response.Redirect(logoutUri);
-                context.HandleResponse();
-
-                return Task.CompletedTask;
-            },
-        };
-    });
+                    return Task.CompletedTask;
+                },
+            };
+        });
+}
+else
+{
+    services.AddAuthentication("BasicAuthentication")
+        .AddScheme<AuthenticationSchemeOptions, 
+            MockAuthenticatedUser>("BasicAuthentication", null);
+}
 
 
 var app = builder.Build();
