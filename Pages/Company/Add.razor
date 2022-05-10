@@ -1,14 +1,5 @@
 ﻿@attribute [Authorize]
 @page "/company/add" 
-@using System.ComponentModel.DataAnnotations
-@using System.Net
-@using System.Text.RegularExpressions
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Mvc
-@using Microsoft.EntityFrameworkCore
-@using MudBlazor
-@using Microsoft.Extensions.Configuration;
-@using SkinApi.Gui.Clients;
 @inject ISkinApiClient SkinApiClient;
 @inject ISnackbar Snackbar;
 @inject NavigationManager NavManager;
@@ -18,7 +9,7 @@
 <MudText Typo="Typo.h3" GutterBottom="true">Add new Company</MudText>
 
 <MudCard>
-    <MudForm Model="@_inputModel" @ref="@form">
+    <MudForm Model="@_inputModel" @ref="@_form">
         <MudCardContent>
             <MudTextField @bind-value="_inputModel.Company"
                           T="string"
@@ -39,26 +30,21 @@
             <MudTextField @bind-value="_inputModel.CompanyPostalcode"
                           T="string"
                           Immediate="true"
-                          label="Postalcode" Required="true"
+                          label="Postalcode"
+                          Required="true"
                           RequiredError="Company Postalcode is required."/>
             <MudTextField @bind-value="_inputModel.CompanyCity"
                           T="string"
                           Immediate="true"
-                          label="City" Required="true"
+                          label="City"
+                          Required="true"
                           RequiredError="Company city is required."/>
-            <MudTextField @bind-value="_inputModel.CompanyZIP"
-                          T="string"
-                          Immediate="true"
-                          label="ZIP"/>
             <MudTextField @bind-value="_inputModel.CompanyCountry"
                           T="string"
                           Immediate="true"
-                          label="Country" Required="true"
+                          label="Country"
+                          Required="true"
                           RequiredError="Company country is required."/>
-            <MudTextField @bind-value="_inputModel.SecondAdres"
-                          T="string"
-                          Immediate="true"
-                          label="Second Address"/>
             <MudTextField @bind-value="_inputModel.GeneralEmailaddress"
                           T="string"
                           Immediate="true"
@@ -81,13 +67,13 @@
 
 @code {
     CompanyRecord _inputModel = new CompanyRecord();
-    MudForm form;
+    MudForm? _form;
 
-    private IEnumerable<CompanyRecord> companies = new List<CompanyRecord>();
+    private IEnumerable<CompanyRecord> _companies = new List<CompanyRecord>();
 
     protected override async Task OnInitializedAsync()
     {
-        companies = await SkinApiClient.GetCompaniesAsync();
+        _companies = await SkinApiClient.GetCompaniesAsync();
     }
 
     // Replace validation with something that does it on the fly:
@@ -96,12 +82,12 @@
     {
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
-        if (companies.Any(c => c.Company.Equals(_inputModel.Company, StringComparison.OrdinalIgnoreCase)))
+        if (_companies.Any(c => c.Company.Equals(_inputModel.Company, StringComparison.OrdinalIgnoreCase)))
         {
             return;
         }
 
-        if (companies.Any(c =>
+        if (_companies.Any(c =>
             c.CompanyStreetname1.Equals(_inputModel.CompanyStreetname1, StringComparison.OrdinalIgnoreCase) ||
             c.CompanyStreetname1.Equals(_inputModel.CompanyStreetname2, StringComparison.OrdinalIgnoreCase)
             ))
@@ -118,7 +104,7 @@
             }
         }
 
-        if (companies.Any(c =>
+        if (_companies.Any(c =>
             c.CompanyStreetname2.Equals(_inputModel.CompanyStreetname1, StringComparison.OrdinalIgnoreCase) ||
             c.CompanyStreetname2.Equals(_inputModel.CompanyStreetname2, StringComparison.OrdinalIgnoreCase)
             ))
@@ -135,30 +121,14 @@
             }
         }
 
-        if (companies.Any(c =>
+        if (_companies.Any(c =>
             c.CompanyPostalcode.Equals(_inputModel.CompanyPostalcode, StringComparison.OrdinalIgnoreCase)
             ))
         {
             var result = await DialogService.ShowMessageBox(
                 "Warning",
                 $"Postal code {_inputModel.CompanyPostalcode} already exists in the database. Continue?",
-                yesText: "Yes", 
-                cancelText: "No");
-
-            if (result != true)
-            {
-                return;
-            }
-        }
-
-        if (companies.Any(c =>
-            c.KvKnumber.Equals(_inputModel.KvKnumber, StringComparison.OrdinalIgnoreCase)
-            ))
-        {
-            var result = await DialogService.ShowMessageBox(
-                "Warning",
-                $"KVK-number {_inputModel.KvKnumber} already exists in the database. Continue?",
-                yesText: "Yes", 
+                yesText: "Yes",
                 cancelText: "No");
 
             if (result != true)

@@ -22,10 +22,10 @@
         <MudTh>Edit</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id" >@context.CompanyID</MudTd>
+        <MudTd DataLabel="Id" >@context.CompanyId</MudTd>
         <MudTd DataLabel="Name">@context.Company</MudTd>
         <MudTd DataLabel="EditCompany" Style="text-align:right">
-            <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="@((e) => SelectCompany(context.CompanyID.Value))" />
+            <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="@((e) => SelectCompany(context.CompanyId.Value))" />
         </MudTd>    
     </RowTemplate>
 </MudTable>

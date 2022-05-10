@@ -16,67 +16,57 @@
 <MudText Typo="Typo.h3" GutterBottom="true">Edit Company</MudText>
 
 <MudCard>
-    <MudForm Model="@CompanyRecordModel" @ref="@form">
+    <MudForm Model="@_companyRecordModel" @ref="@form">
     <MudCardContent>
-        <MudTextField @bind-value="CompanyRecordModel.Company"
-                      text="@CompanyRecordModel.Company"
+        <MudTextField @bind-value="_companyRecordModel.Company"
+                      text="@_companyRecordModel.Company"
                       T="string"
                       Immediate="true"
                       label="Name" 
                       Required="true" 
                       RequiredError="Company name is required."/>
-        <MudTextField @bind-value="CompanyRecordModel.CompanyStreetname1"
-                      Text="@CompanyRecordModel.CompanyStreetname1"
+        <MudTextField @bind-value="_companyRecordModel.CompanyStreetname1"
+                      Text="@_companyRecordModel.CompanyStreetname1"
                       T="string"
                       Immediate="true"
                       label="Street name 1" 
                       Required="true" 
                       RequiredError="At least one company streetname is required."/>
-        <MudTextField @bind-value="CompanyRecordModel.CompanyStreetname2"
-                      Text="@CompanyRecordModel.CompanyStreetname2"
+        <MudTextField @bind-value="_companyRecordModel.CompanyStreetname2"
+                      Text="@_companyRecordModel.CompanyStreetname2"
                       T="string"
                       Immediate="true"
                       label="Street name 2" />
-        <MudTextField @bind-value="CompanyRecordModel.CompanyPostalcode"
-                      Text="@CompanyRecordModel.CompanyPostalcode"
+        <MudTextField @bind-value="_companyRecordModel.CompanyPostalcode"
+                      Text="@_companyRecordModel.CompanyPostalcode"
                       T="string"
                       Immediate="true"
                       label="Postalcode" Required="true"
                       RequiredError="Company Postalcode is required."/>
-        <MudTextField @bind-value="CompanyRecordModel.CompanyCity"
-                      Text="@CompanyRecordModel.CompanyCity"
+        <MudTextField @bind-value="_companyRecordModel.CompanyCity"
+                      Text="@_companyRecordModel.CompanyCity"
                       T="string"
                       Immediate="true"
                       label="City" Required="true"
                       RequiredError="Company city is required."/>
-        <MudTextField @bind-value="CompanyRecordModel.CompanyZIP"
-                      Text="@CompanyRecordModel.CompanyZIP"
-                      T="string"
-                      Immediate="true"
-                      label="ZIP" />
-        <MudTextField @bind-value="CompanyRecordModel.CompanyCountry"
-                      Text="@CompanyRecordModel.CompanyCountry"
+        <MudTextField @bind-value="_companyRecordModel.CompanyCountry"
+                      Text="@_companyRecordModel.CompanyCountry"
                       T="string"
                       Immediate="true"
                       label="Country" Required="true"
                       RequiredError="Company country is required."/>
-        <MudTextField @bind-value="CompanyRecordModel.SecondAdres"
-                      Text="@CompanyRecordModel.SecondAdres"
-                      T="string"
-                      Immediate="true"
-                      label="Second Address" />
-        <MudTextField @bind-value="CompanyRecordModel.GeneralEmailaddress"
-                      Text="@CompanyRecordModel.GeneralEmailaddress"
+    <MudTextField @bind-value="_companyRecordModel.GeneralEmailaddress"
+                      Text="@_companyRecordModel.GeneralEmailaddress"
                       T="string"
                       Immediate="true"
                       label="General Email" />
-        <MudTextField @bind-value="CompanyRecordModel.GeneralPhonenumber"
-                      Text="@CompanyRecordModel.GeneralPhonenumber"
+        <MudTextField @bind-value="_companyRecordModel.GeneralPhonenumber"
+                      Text="@_companyRecordModel.GeneralPhonenumber"
                       T="string"
                       Immediate="true"
                       label="General Phone number" />
-        <MudTextField @bind-value="CompanyRecordModel.CompanyWebsite"
-                      Text="@CompanyRecordModel.CompanyWebsite"
+        <MudTextField @bind-value="_companyRecordModel.CompanyWebsite"
+                      Text="@_companyRecordModel.CompanyWebsite"
                       T="string"
                       Immediate="true"
                       label="Website" />
@@ -92,27 +82,15 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Parameter] public string CompanyId { get; set; }
     
-    CompanyRecord CompanyRecordModel = new CompanyRecord();
+    CompanyRecord _companyRecordModel = new CompanyRecord();
     MudForm form;
     
-    private IEnumerable<CompanyRecord> companies = new List<CompanyRecord>();
-    private CompanyRecord? currentCompany;
+    private IEnumerable<CompanyRecord> _companies = new List<CompanyRecord>();
 
     protected override async Task OnInitializedAsync()
     {
-        companies = await SkinApiClient.GetCompaniesAsync();
-        currentCompany = companies.FirstOrDefault(x => x.CompanyID.Value.ToString() == CompanyId);
-        CompanyRecordModel.Company = currentCompany.Company;
-        CompanyRecordModel.CompanyStreetname1 = currentCompany.CompanyStreetname1;
-        CompanyRecordModel.CompanyStreetname2 = currentCompany.CompanyStreetname2;
-        CompanyRecordModel.CompanyPostalcode = currentCompany.CompanyPostalcode;
-        CompanyRecordModel.CompanyCity = currentCompany.CompanyCity;
-        CompanyRecordModel.CompanyZIP = currentCompany.CompanyZIP;
-        CompanyRecordModel.CompanyCountry = currentCompany.CompanyCountry;
-        CompanyRecordModel.SecondAdres = currentCompany.SecondAdres;
-        CompanyRecordModel.GeneralEmailaddress = currentCompany.GeneralEmailaddress;
-        CompanyRecordModel.GeneralPhonenumber = currentCompany.GeneralPhonenumber;
-        CompanyRecordModel.CompanyWebsite = currentCompany.CompanyWebsite;
+        _companies = await SkinApiClient.GetCompaniesAsync();
+        _companyRecordModel = _companies.FirstOrDefault(x => x.CompanyId.Value.ToString() == CompanyId);
         StateHasChanged();
         
     }
@@ -123,17 +101,18 @@
     {
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         
-        foreach (var company in companies)
+        foreach (var company in _companies)
         {
             CompanyNames.Add(company.Company);
         }
-        if (CompanyNames.Contains(CompanyRecordModel.Company))
+        if (CompanyNames.Contains(_companyRecordModel.Company))
         {
             Snackbar.Add("Company name already exists in database. Company has not been updated.", Severity.Error);
             return;
         }
 
-        SkinApiClient.UpdateCompanyAsync(CompanyRecordModel);
+        // Check error on submit? (Say, if server validation failed).
+        SkinApiClient.UpdateCompanyAsync(_companyRecordModel);
         NavManager.NavigateTo("/company");
     }
 }

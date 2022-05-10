@@ -23,15 +23,16 @@ namespace SkinApi.Gui.Clients
 
         public async void AddCompanyAsync(CompanyRecord inputModel)
         {
-            string companyId = null;
-            var httpContent = new StringContent(JsonConvert.SerializeObject(inputModel), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync("/Company/{companyId}", httpContent);
+            // Post is for adding, no Id because it's a new one that doesn't have an Id yet
+            await _httpClient.PostAsJsonAsync($"/Company", inputModel);
         }
 
         public async void UpdateCompanyAsync(CompanyRecord companyRecord)
         {
             var httpContent = new StringContent(JsonConvert.SerializeObject(companyRecord), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync("/Company/" + companyRecord.CompanyID, httpContent);
+            // Patch is for (partial) updating, pass the Id of the company we want to update
+            // PatchAsJsonAsync isn't available before .net 7-preview3
+            await _httpClient.PatchAsync($"/Company/{companyRecord.CompanyId}", httpContent);
         }
     }
 }
